@@ -1,7 +1,7 @@
 ---
 title: "Client Report - Project 0: Introduction"
 subtitle: "Course DS 250"
-author: "[STUDENT NAME]"
+author: "Nathan Luckock"
 format:
   html:
     self-contained: true
@@ -37,7 +37,6 @@ LetsPlot.setup_html(isolated_frame=True)
 ```{python}
 # Learn morea about Code Cells: https://quarto.org/docs/reference/cells/cells-jupyter.html
 
-# Include and execute your code here
 from palmerpenguins import load_penguins
 df = load_penguins()
 ```
@@ -48,16 +47,30 @@ __Include the tables created from [PY4DS: CH2 Data Visualization](https://aeturr
 
 
 ```{python}
-# Include and execute your code here
+from palmerpenguins import load_penguins
+penguins = load_penguins()
 
-
+penguins                   
+penguins.head()              
+penguins.shape             
+penguins.dtypes              
+penguins.describe()          
+penguins['species'].value_counts()  
 ```
 
 _include figures in chunks and discuss your findings in the figure._
 
 ```{python}
-# Include and execute your code here
+from lets_plot import *
+LetsPlot.setup_html(isolated_frame=True)
 
+(
+    ggplot(penguins) +
+    geom_point(aes('flipper_length_mm', 'body_mass_g', color='species'),
+               size=3, alpha=.7) +
+    labs(title='Flipper length vs body mass by species',
+         x='Flipper length (mm)', y='Body mass (g)')
+)
 
 ```
 
@@ -68,7 +81,14 @@ __Recreate the example charts from [PY4DS: CH2 Data Visualization](https://aetur
 
 
 ```{python}
-# Include and execute your code here
+# --- Chart 1 -------------------------------------------------------
+from lets_plot import *
+
+ggplot(penguins) + \
+    geom_point(aes('flipper_length_mm', 'body_mass_g', color='species'),
+               size=3, alpha=.7) + \
+    labs(title='Flipper length vs body mass',
+         x='Flipper length (mm)', y='Body mass (g)')
 
 
 ```
@@ -76,28 +96,47 @@ __Recreate the example charts from [PY4DS: CH2 Data Visualization](https://aetur
 _include figures in chunks and discuss your findings in the figure._
 
 ```{python}
-# Include and execute your code here
+# --- Chart 2 -------------------------------------------------------
+ggplot(penguins) + \
+    geom_histogram(aes('bill_length_mm', fill='species'),
+                   bins=30, alpha=.85, color='black') + \
+    facet_wrap('species') + \
+    labs(title='Bill length varies by species',
+         x='Bill length (mm)', y='Count')
 
 
 ```
 
 
 ```{python}
-# Include and execute your code here
+# --- Chart 3 -------------------------------------------------------
+ggplot(penguins.dropna(subset=['sex'])) + \
+    geom_boxplot(aes('species', 'body_mass_g', fill='sex')) + \
+    labs(title='Sexual dimorphism in body mass',
+         x='Species', y='Body mass (g)')
 
 
 ```
 
 
 ```{python}
-# Include and execute your code here
-
-
+# --- Chart 4 (corrected & cleaner) ---------------------------------
+ggplot(penguins) + \
+    geom_point(aes('bill_length_mm', 'bill_depth_mm', color='species'),
+               alpha=.8, size=3) + \
+    facet_grid(y='island') + \
+    labs(title='Bill proportions by island habitat',
+         x='Bill length (mm)', y='Bill depth (mm)')
 ```
 
 
 ```{python}
-# Include and execute your code here
+# -------------------------------- Chart 5 ---------------------------------
+from lets_plot import *         
+LetsPlot.setup_html()      
 
+ggplot(penguins) + \
+    geom_bar(aes('species'), fill='#4C72B0') + \
+    labs(title='Penguin counts by species', x='Species', y='Count')
 
 ```
