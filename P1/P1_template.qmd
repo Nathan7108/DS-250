@@ -1,0 +1,193 @@
+---
+title: "Client Report - What's in a Name?"
+subtitle: "Course DS 250"
+author: "Nathan Luckock"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+    
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+from lets_plot import *
+
+LetsPlot.setup_html(isolated_frame=True)
+```
+
+
+## Project Notes
+
+__For Project 1 the answer to each question should include a chart **and** a written response. The years labels on your charts should not include a comma. At least **two** of your charts must include reference marks.__  
+
+```{python}
+# Learn morea about Code Cells: https://quarto.org/docs/reference/cells/cells-jupyter.html
+
+# Include and execute your code here
+df = pd.read_csv("https://github.com/byuidatascience/data4names/raw/master/data-raw/names_year/names_year.csv")
+```
+
+## QUESTION|TASK 1
+
+__How does your name at your birth year compare to its use historically?__
+
+My name, Nathan, saw a steady rise in popularity throughout the mid 1900s and peaked right around 2005, the year I was born.
+Historically, it wasn’t very common in the early 1900s, but it became much more popular by the late 20th century.
+The trend shows that I was born at the height of the name's popularity.
+
+```{python}
+my_name = df[df['name'] == "Nathan"]
+my_name.plot(x="year", y="Total", title="Name 'Nathan' Over Time", legend=False)
+```
+
+
+## QUESTION|TASK 2
+
+__If you talked to someone named Brittany on the phone, what is your guess of his or her age? What ages would you not guess?__
+
+If I talked to someone named Brittany on the phone, I would guess they were born between 1985 and 1995.
+I would not guess they were younger than 20 or older than 45, since the name was rarely used outside that time window.
+
+```{python}
+britt = df[df["name"] == "Brittany"]
+britt.plot(x="year", y="Total", title="Name 'Brittany' Over Time", legend=False)
+```
+
+
+## QUESTION|TASK 3
+
+__Mary, Martha, Peter, and Paul are all Christian names. From 1920 - 2000, compare the name usage of each of the four names in a single chart. What trends do you notice?__
+
+Mary was the most popular name and peaked around 1950. After that, it slowly became less common. Peter and Martha started of similiar until a decline with Martha leading to the least used name. Paul ended up being the second highest with a peak around 1955. Overall, all four names became less popular from 1920 to 2000 except for Peter, remaning almost the same.
+```{python}
+names = ["Mary", "Martha", "Peter", "Paul"]
+subset = df[(df["name"].isin(names)) & (df["year"] >= 1920) & (df["year"] <= 2000)]
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+sns.lineplot(data=subset, x="year", y="Total", hue="name")
+plt.title("Christian Name Usage (1920–2000)")
+plt.xlabel("Year")
+plt.ylabel("Total")
+plt.grid(True)
+plt.show()
+```
+
+
+
+## QUESTION|TASK 4
+
+__Think of a unique name from a famous movie. Plot the usage of that name and see how changes line up with the movie release. Does it look like the movie had an effect on usage?__  
+
+The name Trinity became more popular after the movie The Matrix came out in 1999.
+It grew a lot in the early 2000s and peaked around 2005.
+Before the movie, it wasn’t used much.
+The chart shows that the movie likely had a big effect on how often the name was chosen.
+
+```{python}
+trinity = df[df["name"] == "Trinity"]
+
+plt.figure(figsize=(10, 6))
+plt.plot(trinity["year"], trinity["Total"], label="Trinity")
+plt.axvline(1999, color='red', linestyle='--', label="The Matrix (1999)")
+plt.title("Name 'Trinity' Before and After The Matrix")
+plt.xlabel("Year")
+plt.ylabel("Total")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+---
+
+## STRETCH QUESTION|TASK 1
+
+__Reproduce the chart Elliot using the data from the `names_year.csv` file.__ 
+
+Stretch challenge completed! 
+
+```{python}
+import matplotlib.pyplot as plt
+
+# Filter
+elliot = df[df["name"] == "Elliot"]
+years = elliot["year"]
+values = elliot["Total"]
+
+fig, ax = plt.subplots(figsize=(10, 5))
+fig.patch.set_facecolor('white')
+ax.set_facecolor('#e0e5ea')
+
+# Plot
+ax.plot(years, values, color='royalblue', linewidth=2)
+
+#  Reference lines
+for x in (1982, 1985, 2002):
+    ax.axvline(x, color='red', linestyle='--')
+
+# Annotations
+max_y = values.max()
+for x, txt, ha in [(1982, "E.T Released", 'right'),
+                   (1985, "Second Release", 'left'),
+                   (2002, "Third Release", 'left')]:
+    ax.text(x, max_y * 0.97, txt, color='gray', ha=ha, va='bottom')
+
+for spine in ax.spines.values():
+    spine.set_visible(False)
+
+xticks = list(range(1950, 2021, 10))
+yticks = list(range(0, 1201, 200))
+ax.set_xticks(xticks)
+ax.set_yticks(yticks)
+
+tick_spacing = yticks[1] - yticks[0]
+bottom_pad = tick_spacing * 0.30  # =10
+
+ax.set_ylim(-bottom_pad, max_y * 1.05)
+ax.set_xlim(1950, 2020)
+
+# Grid 
+ax.grid(which='major', color='white')
+
+# Gray styling for ticks and labels
+ax.tick_params(colors='gray')
+ax.xaxis.label.set_color('gray')
+ax.yaxis.label.set_color('gray')
+
+# Title 
+ax.set_title("Elliot… What?", loc='left', color='gray', pad=20)
+
+# Legend 
+ax.legend(["Elliot"], loc="upper left", bbox_to_anchor=(1,1),
+          frameon=False, labelcolor='gray')
+ax.set_ylabel("Total", labelpad=20, color='gray', rotation=90, ha='center', va='bottom')
+ax.text(1.02, .99, "name", transform=ax.transAxes, color='gray', fontsize=10, ha='left')
+
+
+# X and Y labels
+ax.yaxis.set_label_coords(-0.06, 0.5)
+ax.set_xlabel("Year", labelpad=10, color='gray')
+
+plt.tight_layout()
+plt.show()
+```
