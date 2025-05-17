@@ -29,6 +29,8 @@ execute:
 import pandas as pd
 import numpy as np
 from lets_plot import *
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 LetsPlot.setup_html(isolated_frame=True)
 ```
@@ -55,7 +57,16 @@ The trend shows that I was born at the height of the name's popularity.
 
 ```{python}
 my_name = df[df['name'] == "Nathan"]
-my_name.plot(x="year", y="Total", title="Name 'Nathan' Over Time", legend=False)
+
+plt.figure(figsize=(10, 6))
+plt.plot(my_name["year"], my_name["Total"], label="Nathan")
+plt.axvline(2005, color='red', linestyle='--', label="Birth Year (2005)")
+plt.title("Name 'Nathan' Over Time")
+plt.xlabel("Year")
+plt.ylabel("Total")
+plt.legend()
+plt.grid(True)
+plt.show()
 ```
 
 
@@ -68,7 +79,16 @@ I would not guess they were younger than 20 or older than 45, since the name was
 
 ```{python}
 britt = df[df["name"] == "Brittany"]
-britt.plot(x="year", y="Total", title="Name 'Brittany' Over Time", legend=False)
+
+plt.figure(figsize=(10, 6))
+plt.plot(britt["year"], britt["Total"], label="Brittany")
+plt.axvline(britt["year"][britt["Total"].idxmax()], color='red', linestyle='--', label="Peak Year")
+plt.title("Name 'Brittany' Over Time")
+plt.xlabel("Year")
+plt.ylabel("Total")
+plt.legend()
+plt.grid(True)
+plt.show()
 ```
 
 
@@ -80,9 +100,6 @@ Mary was the most popular name and peaked around 1950. After that, it slowly bec
 ```{python}
 names = ["Mary", "Martha", "Peter", "Paul"]
 subset = df[(df["name"].isin(names)) & (df["year"] >= 1920) & (df["year"] <= 2000)]
-
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
 sns.lineplot(data=subset, x="year", y="Total", hue="name")
@@ -110,6 +127,7 @@ trinity = df[df["name"] == "Trinity"]
 plt.figure(figsize=(10, 6))
 plt.plot(trinity["year"], trinity["Total"], label="Trinity")
 plt.axvline(1999, color='red', linestyle='--', label="The Matrix (1999)")
+plt.axvline(trinity["year"][trinity["Total"].idxmax()], color='gray', linestyle='--', label="Peak Year")
 plt.title("Name 'Trinity' Before and After The Matrix")
 plt.xlabel("Year")
 plt.ylabel("Total")
@@ -129,7 +147,6 @@ Stretch challenge completed!
 ```{python}
 import matplotlib.pyplot as plt
 
-# Filter
 elliot = df[df["name"] == "Elliot"]
 years = elliot["year"]
 values = elliot["Total"]
@@ -138,14 +155,11 @@ fig, ax = plt.subplots(figsize=(10, 5))
 fig.patch.set_facecolor('white')
 ax.set_facecolor('#e0e5ea')
 
-# Plot
 ax.plot(years, values, color='royalblue', linewidth=2)
 
-#  Reference lines
 for x in (1982, 1985, 2002):
     ax.axvline(x, color='red', linestyle='--')
 
-# Annotations
 max_y = values.max()
 for x, txt, ha in [(1982, "E.T Released", 'right'),
                    (1985, "Second Release", 'left'),
@@ -166,25 +180,20 @@ bottom_pad = tick_spacing * 0.30  # =10
 ax.set_ylim(-bottom_pad, max_y * 1.05)
 ax.set_xlim(1950, 2020)
 
-# Grid 
 ax.grid(which='major', color='white')
 
-# Gray styling for ticks and labels
 ax.tick_params(colors='gray')
 ax.xaxis.label.set_color('gray')
 ax.yaxis.label.set_color('gray')
 
-# Title 
 ax.set_title("Elliot… What?", loc='left', color='gray', pad=20)
 
-# Legend 
 ax.legend(["Elliot"], loc="upper left", bbox_to_anchor=(1,1),
           frameon=False, labelcolor='gray')
 ax.set_ylabel("Total", labelpad=20, color='gray', rotation=90, ha='center', va='bottom')
 ax.text(1.02, .99, "name", transform=ax.transAxes, color='gray', fontsize=10, ha='left')
 
 
-# X and Y labels
 ax.yaxis.set_label_coords(-0.06, 0.5)
 ax.set_xlabel("Year", labelpad=10, color='gray')
 
